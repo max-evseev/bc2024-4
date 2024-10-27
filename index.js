@@ -28,9 +28,16 @@ const options = program.opts();
         res.end();
         }
         else if (req.method === 'DELETE') {
-        res.writeHead(200);
-        res.write("runnin");
-        res.end();
+            try {
+            await fs.unlink(options.cache + '/' + req.url.slice(1) + '.jpg');
+            res.writeHead(200, "OK", { "Content-Type": "text/plain" });
+            res.end("picture was successfuly deleted");
+            }
+            catch {
+            res.writeHead(404, "Not found", { "Content-Type": "text/plain" });
+            res.write("not found");
+            res.end();
+            }
         }
         else {
         res.writeHead(405, "Method not allowed", { "Content-Type": "text/plain" });
