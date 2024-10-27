@@ -21,11 +21,25 @@ const options = program.opts();
             res.write("not found");
             res.end();
             }
-        }
+        } 
         else if (req.method === 'PUT') {
-        res.writeHead(201);
-        res.write("runnin");
-        res.end();
+        const data = [];
+            req.on('data', chunk => {
+            data.push(chunk);
+            });
+            req.on('end', async () => {
+                const contents = Buffer.concat(data);
+                try {
+                await fs.writeFile(options.cache + '/' + req.url.slice(1) + '.jpg', contents);
+                res.writeHead(201, "Created", { "Content-Type": "text/plain" });
+                res.end("picture was successfuly uploaded");
+                }
+                catch {
+                res.writeHead(404, "Not found", { "Content-Type": "text/plain" });
+                res.write("not found");
+                res.end();
+                }
+            });
         }
         else if (req.method === 'DELETE') {
             try {
