@@ -17,9 +17,18 @@ const options = program.opts();
             res.end(contents);
             }
             catch {
-            res.writeHead(404, "Not found", { "Content-Type": "text/plain" });
-            res.write("not found");
-            res.end();
+                try {
+                const request = await superagent.get("https://http.cat/" + req.url.slice(1));
+                const contents = await request.body;
+                await fs.writeFile(options.cache + '/' + req.url.slice(1) + '.jpg', contents);
+                res.writeHead(200, "OK", { "Content-Type": "image/jpeg" });
+                res.end(contents);
+                }
+                catch {
+                res.writeHead(404, "Not found", { "Content-Type": "text/plain" });
+                res.write("not found");
+                res.end();
+                }
             }
         } 
         else if (req.method === 'PUT') {
